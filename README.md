@@ -13,5 +13,14 @@ although it is documented (unoficially) [here][2]
 * Packaging
 * Everything else
 
+## Examples
+
+  import bigv
+
+  act = bigv.BigVAccount(username="alice",password="testing",account="mystuff")
+  for m in act.machines():
+    print "Machine has %d discs" % len(list(m.discs()))
+    print m.info()
+
 [1]: http://www.bigv.io/download
 [2]: http://bigv-api-docs.ichilton.co.uk/api/
