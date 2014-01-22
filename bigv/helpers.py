@@ -12,12 +12,13 @@ class BigVMachineResource(BigVResource):
 
     def op(self, operation, dargs={}):
         args = []
-        for k in dargs:
+        for k in dargs.keys():
+            key = k.replace("_","-")
             v = dargs[k]
             if v == None:
-                args.append("--%s" % k)
+                args.append("--%s" % key)
             else:
-                args.append("--%s %s" % (k,v))
+                args.append("--%s %s" % (key,v))
         cmd = [operation,
                "--vm-name %s" % self.name(),
                "--group-name %s" % self.machine().group().name()]+args

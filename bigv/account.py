@@ -25,7 +25,7 @@ class BigVAccount:
                     "--yaml"]
         if self.yubikey:
             command_args.append("--yubikey")
-            command_args.append(yubikey)
+            command_args.append(self.yubikey)
         else:
             command_args.append("--no-yubikey")
         proc = subprocess.Popen(command_args,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
@@ -81,11 +81,11 @@ class BigVAccount:
                         "--vm-discs %s" % discs,
                         "--group-name %s" % group]
         if rdns != None:
-            vm_params.append("--rdns %s" % rdns)
+            cmd_params.append("--rdns %s" % rdns)
         if root_password != None:
-            vm_params.append("--vm-root-password %s" % root_password)
+            cmd_params.append("--vm-root-password %s" % root_password)
         if wait == False:
-            vm_params.append("--no-wait")
+            cmd_params.append("--no-wait")
         self.cmd(cmd_params)
         return self.machine(namegroup=tngrp)
 
