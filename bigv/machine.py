@@ -45,6 +45,14 @@ class BigVMachine(BigVMachineResource):
             if d.label() == label:
                 return d
 
+    def create_disc(self, label, size, grade="sata"):
+        if self.disc(label):
+            raise BigVCollision("Disk %s already exists!" % label)
+        (rc,so,se) = self.op("disc new", dict(disc_label=label,
+                                              disc_grade=grade,
+                                              disc_size=int(size)))
+        return self.disc(label)
+
     def nics(self):
         for n in self.fact("network_interfaces"):
             yield BigVNic(self.account, n)
