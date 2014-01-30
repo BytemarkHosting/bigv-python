@@ -87,7 +87,7 @@ class BigVAccount:
         if wait == False:
             cmd_params.append("--no-wait")
         self.cmd(cmd_params)
-        return self.machine(namegroup=tngrp)
+        return self.machine(namegroup=BigVMachine.mgrp(name,group))
 
     def machines(self, group=None):
         for g in self.groups():
