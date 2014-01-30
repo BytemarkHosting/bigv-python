@@ -1,0 +1,135 @@
+#!/usr/bin/python
+#coding: utf-8 -*-
+
+import os,sys
+import subprocess
+import yaml
+import json
+
+import bigv
+
+DOCUMENTATION = '''
+---
+module: bigv-vm
+version_added: "1.4.3"
+short_description: Create/Delete VMs from BigV
+description:
+   - Create or Remove virtual machines from BigV.
+options:
+   login_username:
+     description:
+        - login username to authenticate to BigV
+     required: true
+     default: admin
+   login_password:
+     description:
+        - Password for user to login with
+     required: true
+     default: 'yes'
+   login_account:
+     description:
+        - BigV account to select
+     required: true
+   login
+   login_yubikey:
+     description:
+        - Yubikey OTP
+     required: false
+   vm_name:
+     description:
+        - Name of the VM to operate on
+    required: true
+   vm_group:
+     description:
+        - Group of the VM to operate on
+     required: true
+     default: 'default'
+   vm_distribution:
+     description:
+        - Operating system to image the machine with (only when creating a new machine)
+     required: false
+     default: 'squeeze'
+   vm_rdns:
+     description:
+        - RDNS record for the Virtual Machine's primary IPv6 and IPv4 addresses
+requirements: ["bigv"]
+'''
+
+EXAMPLES = '''
+# Creates a new VM
+- bigv-vm: state: present
+        login_username: alice
+        login_password: test123
+        login_account: mycompany
+        vm_name: status
+        vm_rdns: 
+'''
+
+def main():
+    module = AnsibleModule(
+        argument_spec = dict(
+            login_username                  = dict(required=True),
+            login_password                  = dict(required=True),
+            login_yubikey                   = dict(default=None),
+            login_account                   = dict(required='True'),
+            vm_name                         = dict(required=True),
+            vm_group                        = dict(default='default'),
+            vm_distribution                 = dict(default='wheezy'),
+            vm_cores                        = dict(default=1),
+            vm_memory                       = dict(default=1),
+            vm_discs                        = dict(default='sata:25'),
+            vm_root_password                = dict(default=None),
+            vm_rdns                         = dict(default=None),
+            wait                            = dict(default='yes', choices=['yes', 'no']),
+            group_create                    = dict(default='no', choices=['yes', 'no']),
+            state                           = dict(default='present', choices=['absent', 'present', 'running', 'stopped'])
+        ),
+    )
+
+    account = bigv.BigVAccount(username=module.params['login_username'],
+                          password=module.params['login_password'],
+                          account=module.params['login_account'],
+                          yubikey=module.params['login_yubikey'])
+
+    ngrp = bigv.BigVMachine.mgrp(module.params['vm_name'],module.params['vm_group'])
+
+    target = account.machine(namegroup=ngrp)
+
+    if target == None:
+        # machine doesn't exist
+        if module.params['state'] == "absent":
+            module.exit_json(changed=False)
+        else:
+            try:
+                machine = account.create_machine(name=module.params['vm_name'],
+                                                 group=module.params['vm_group'],
+                                                 distribution=module.params['vm_distribution'],
+                                                 cores=module.params['vm_cores'],
+                                                 memory=module.params['vm_memory'],
+                                                 discs=module.params['vm_discs'],
+                                                 root_password=module.params['vm_root_password'],
+                                                 rdns=module.params['vm_rdns'],
+                                                 wait=module.params['wait'],
+                                                 group_create=module.params['group_create'])
+                module.exit_json(changed=True,vm=machine.info())
+            except bigv.BigVGroupMissing:
+                module.fail_json(msg="Group doesn't exist and group_create is false")
+    else:
+        # machine does exist
+        if module.params['state'] == "absent":
+            target.delete()
+            module.exit_json(changed=True, msg="%s was deleted" % target.hostname())
+        else:
+            if target.state == "on" and module.params['state'] == "stopped":
+                target.stop()
+                module.exit_json(changed=True, bigv_vm=target.info())
+            elif target.state == "off" and module.params['state'] == "running":
+                target.start()
+                module.exit_json(changed=True, bigv_vm=target.info())
+            else:
+                # everything matches what we specified
+                module.exit_json(changed=False, bigv_vm=target.info())
+    module.fail_json(msg="Shouldn't reach here")
+
+from ansible.module_utils.basic import *
+main()

@@ -1,0 +1,130 @@
+#!/usr/bin/python
+#coding: utf-8 -*-
+
+import os,sys
+import subprocess
+import yaml
+import json
+
+sys.path.append(".")
+import bigv
+
+DOCUMENTATION = '''
+---
+module: bigv-disc
+version_added: "1.4.3"
+short_description: Create/Delete Discs from BigV
+description:
+   - Create or Remove discs attached to machines in BigV.
+options:
+   login_username:
+     description:
+        - login username to authenticate to BigV
+     required: true
+     default: admin
+   login_password:
+     description:
+        - Password for user to login with
+     required: true
+     default: 'yes'
+   login_account:
+     description:
+        - BigV account to select
+     required: true
+   login
+   login_yubikey:
+     description:
+        - Yubikey OTP
+     required: false
+   vm_name:
+     description:
+        - Name of the VM to operate on
+    required: true
+   vm_group:
+     description:
+        - Group of the VM to operate on
+     required: true
+     default: 'default'
+   disc_label:
+     description:
+        - Label for the disc
+     required: true
+   disc_grade:
+     description:
+        - Grade for the disc, must be one of 'sata', 'sas', 'ssd' or 'archive'
+     required: false
+     default: 'sata'
+   disc_size:
+     description:
+        - Size for the disc, in GB, as a string eg '25'
+    required: false
+requirements: ["bigv"]
+'''
+
+EXAMPLES = '''
+# Creates a disc if it doesn't exist
+- bigv-disc: state: present
+        login_username: alice
+        login_password: test123
+        login_account: mycompany
+        vm_name: status
+        vm_group: testing
+        disc_name: backups
+        disc_grade: archive
+        disc_size: 500GB
+'''
+
+def main():
+    module = AnsibleModule(
+        argument_spec = dict(
+            login_username                  = dict(required=True),
+            login_password                  = dict(required=True),
+            login_yubikey                   = dict(default=None),
+            login_account                   = dict(required='True'),
+            vm_name                         = dict(required=True),
+            vm_group                        = dict(default='default'),
+            disc_label                      = dict(required=True),
+            disc_size                       = dict(required=False,default='25GB'),
+            disc_grade                      = dict(default='sata', choices=['sata','sas','ssd','archive']),
+            state                           = dict(default='present', choices=['absent', 'present'])
+        ),
+    )
+
+    account = bigv.BigVAccount(username=module.params['login_username'],
+                          password=module.params['login_password'],
+                          account=module.params['login_account'],
+                          yubikey=module.params['login_yubikey'])
+
+    ngrp = bigv.BigVMachine.mgrp(module.params['vm_name'],module.params['vm_group'])
+
+    target = account.machine(namegroup=ngrp)
+
+    if target == None:
+        # machine doesn't exist
+        module.fail_json(msg="No such vm %s" % ngrp)
+    else:
+        # machine does exist
+        disc = target.disc(module.params['disc_label'])
+        if disc == None:
+            if module.params['state'] == 'absent':
+                module.exit_json(changed=False)
+            else:
+                # disc=None but state=Present
+                newdisc = target.create_disc(label=module.params['disc_label'],
+                                             grade=module.params['disc_grade'],
+                                             size=module.params['disc_size'])
+                module.exit_json(changed=True,disc=newdisc.info())
+        else:
+            # disc exists
+            if module.params['state'] == 'absent':
+                target.disc(module.params['disc_label']).delete()
+                module.exit_json(changed=True,msg="Deleted disc %s from %s" % (module.params['disc_label'],
+                                                                               ngrp))
+            else:
+                # is it the same size/grade?
+
+                module.exit_json(changed=False, disc=disc.info())
+    module.fail_json(msg="Shouldn't reach here")
+
+from ansible.module_utils.basic import *
+main()
