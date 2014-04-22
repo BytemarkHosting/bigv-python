@@ -14,10 +14,10 @@ class BigVDisc(BigVMachineResource):
         return self.fact("size")
 
     def delete(self):
-        return self.op("disc delete")
+        return self.op("disc delete",dict(disc_label=self.label(),disc_label_confirmation=self.label()))
 
     def purge(self):
-        return self.op("disc purge")
+        return self.op("disc purge",dict(disc_label=self.label(),disc_label_confirmation=self.label()))
 
     def __str__(self):
         return "<BigVDisc label=%s size=%sGB storage_grade=%s>" % (self.label(),self.size()/1024, self.storage_grade())

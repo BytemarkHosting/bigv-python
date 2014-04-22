@@ -86,7 +86,8 @@ def main():
             disc_label                      = dict(required=True),
             disc_size                       = dict(required=False,default='25'),
             disc_grade                      = dict(default='sata', choices=['sata','sas','ssd','archive']),
-            state                           = dict(default='present', choices=['absent', 'present'])
+            state                           = dict(default='present', choices=['absent', 'present']),
+            purge                           = dict(default=False,choices=BOOLEANS)
         ),
     )
 
@@ -117,7 +118,10 @@ def main():
         else:
             # disc exists
             if module.params['state'] == 'absent':
-                target.disc(module.params['disc_label']).delete()
+                if module.boolean(module.params['purge']):
+                    target.disc(module.params['disc_label']).purge()
+                else:
+                    target.disc(module.params['disc_label']).delete()
                 module.exit_json(changed=True,msg="Deleted disc %s from %s" % (module.params['disc_label'],
                                                                                ngrp))
             else:
