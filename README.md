@@ -9,9 +9,9 @@ docs are on Github [here][3]).
 
 ## TODO
 
-* Testing
-* Packaging
-* Everything else
+- [ ] Testing
+- [ ] Packaging
+- [ ] Everything else
 
 ## Examples
 
