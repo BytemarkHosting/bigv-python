@@ -38,4 +38,7 @@ the two modules.
 [2]: http://bigv-api-docs.ichilton.co.uk/api/
 [3]: https://github.com/ichilton/bytemark-bigv-api-doc
 
-[//]: # vim:textwidth=80
+<!--- vim:textwidth=80 
+--->
+
+
