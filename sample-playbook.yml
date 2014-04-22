@@ -1,0 +1,40 @@
+---
+- hosts: all
+  connection: local
+  gather_facts: False
+  sudo: False
+  vars_prompt:
+  - name: bigv_user
+    prompt: "Enter bigv user"
+    private: False
+  - name: bigv_password
+    prompt: "Enter bigv password"
+    private: True
+  - name: bigv_yubikey
+    prompt: "Press the yubikey"
+    private: False
+  tasks:
+  - name: make sure the vm exists
+    local_action: bigv-vm
+      login_account=joebloggs
+      login_username={{ bigv_user }}
+      login_password={{ bigv_password }}
+      login_yubikey={{ bigv_yubikey }}
+      vm_name={{ inventory_hostname_short }}
+      vm_distribution=wheezy
+      vm_group=ansible
+      vm_root_password={{ vm_password }}
+      vm_rdns={{ inventory_hostname_short }}.my-brilliant-site.com
+      group_create=yes
+      state=running
+  - name: create the archive disc
+    local_action: bigv-disc
+      login_account=joebloggs
+      login_username={{ bigv_user }}
+      login_password={{ bigv_password }}
+      login_yubikey={{ bigv_yubikey }}
+      vm_name={{ inventory_hostname_short }}
+      vm_group=ansible
+      disc_label=backups
+      disc_grade=archive
+      disc_size=500
