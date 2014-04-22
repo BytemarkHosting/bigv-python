@@ -20,7 +20,7 @@ class BigVMachineResource(BigVResource):
             else:
                 args.append("--%s %s" % (key,v))
         cmd = [operation,
-               "--vm-name %s" % self.name(),
+               "--vm-name %s" % self.machine().name(),
                "--group-name %s" % self.machine().group().name()]+args
         return self.account.cmd(" ".join(cmd))
 

@@ -33,6 +33,9 @@ class BigVMachine(BigVMachineResource):
     def machine_id(self):
         return self.fact("id")
 
+    def machine(self):
+        return self
+
     def name(self):
         return self.fact("name")
 
