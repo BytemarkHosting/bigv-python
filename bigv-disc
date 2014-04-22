@@ -84,7 +84,7 @@ def main():
             vm_name                         = dict(required=True),
             vm_group                        = dict(default='default'),
             disc_label                      = dict(required=True),
-            disc_size                       = dict(required=False,default='25GB'),
+            disc_size                       = dict(required=False,default='25'),
             disc_grade                      = dict(default='sata', choices=['sata','sas','ssd','archive']),
             state                           = dict(default='present', choices=['absent', 'present'])
         ),
