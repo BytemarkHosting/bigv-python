@@ -49,6 +49,11 @@ options:
         - Operating system to image the machine with (only when creating a new machine)
      required: false
      default: 'squeeze'
+   vm_discs:
+     description:
+        - Discs to provision the new machine with (as a string, like the CLI)
+     required: false
+     default: 'sata:25GB'
    vm_rdns:
      description:
         - RDNS record for the Virtual Machine's primary IPv6 and IPv4 addresses
