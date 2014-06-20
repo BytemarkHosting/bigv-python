@@ -53,6 +53,21 @@ options:
         - Operating system to image the machine with (only when creating a new machine)
      required: false
      default: 'squeeze'
+   vm_cores:
+     description:
+        - Cores to provision the new machine with (as a string, like the CLI)
+     required: false
+     default: '1'
+   vm_memory:
+     description:
+        - GB Memory to provision the new machine with (as a string, like the CLI)
+     required: false
+     default: '1'
+   vm_discs:
+     description:
+        - Discs to provision the new machine with (as a string, like the CLI)
+     required: false
+     default: 'sata:25GB'
    vm_rdns:
      description:
         - RDNS record for the Virtual Machine's primary IPv6 and IPv4 addresses
