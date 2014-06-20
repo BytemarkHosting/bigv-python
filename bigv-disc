@@ -31,11 +31,15 @@ options:
      description:
         - BigV account to select
      required: true
-   login
    login_yubikey:
      description:
         - Yubikey OTP
      required: false
+   login_location:
+     description:
+        - API endpoint of the BigV cluster
+     required: false
+     default: https://uk0.bigv.io
    vm_name:
      description:
         - Name of the VM to operate on
@@ -80,6 +84,7 @@ def main():
             login_username                  = dict(required=True),
             login_password                  = dict(required=True),
             login_yubikey                   = dict(default=None),
+            login_location                  = dict(default='https://uk0.bigv.io'),
             login_account                   = dict(required='True'),
             vm_name                         = dict(required=True),
             vm_group                        = dict(default='default'),
@@ -93,7 +98,8 @@ def main():
     account = bigv.BigVAccount(username=module.params['login_username'],
                           password=module.params['login_password'],
                           account=module.params['login_account'],
-                          yubikey=module.params['login_yubikey'])
+                          yubikey=module.params['login_yubikey'],
+                          location=module.params['login_location'])
 
     ngrp = bigv.BigVMachine.mgrp(module.params['vm_name'],module.params['vm_group'])
 

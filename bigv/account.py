@@ -7,10 +7,11 @@ from exceptions import BigVProblem,BigVCollision
 from machine import BigVMachine
 
 class BigVAccount:
-    def __init__(self,username,password,account,yubikey=None):
+    def __init__(self,username,password,account,yubikey=None,location="https://uk0.bigv.io"):
         self.username = username
         self.password = password
         self.account = account
+        self.location = location
         self.yubikey = yubikey
         self._account_cache = None
 
@@ -21,6 +22,7 @@ class BigVAccount:
         command_args += [ "--username", self.username,
                     "--password",  self.password,
                     "--account", self.account,
+                    "--location", self.location,
                     "--batch",
                     "--yaml"]
         if self.yubikey:
