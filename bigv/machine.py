@@ -54,6 +54,7 @@ class BigVMachine(BigVMachineResource):
         (rc,so,se) = self.op("disc new", dict(disc_label=label,
                                               disc_grade=grade,
                                               disc_size=int(size)))
+        self.account.invalidate_cache()
         return self.disc(label)
 
     def nics(self):

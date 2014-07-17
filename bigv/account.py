@@ -1,3 +1,4 @@
+import time
 import subprocess
 import yaml
 
@@ -89,7 +90,12 @@ class BigVAccount:
         if wait == False:
             cmd_params.append("--no-wait")
         self.cmd(cmd_params)
+        # We have to invalidate the vm show cache here or we'll get old data back
+        self.invalidate_cache()
         return self.machine(namegroup=tngrp)
+
+    def invalidate_cache(self):
+        self._account_cache = None
 
     def machines(self, group=None):
         for g in self.groups():
