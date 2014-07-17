@@ -35,7 +35,7 @@ A sample [playbook](sample-playbook.yml) is provided which shows basic usage of
 the two modules.
 
 [1]: http://www.bigv.io/download
-[2]: http://bigv-api-docs.ichilton.co.uk/api/
+[2]: http://www.bigv.io/support/api/
 [3]: https://github.com/ichilton/bytemark-bigv-api-doc
 
 ## Manual Installation Instructions
