@@ -3,7 +3,7 @@ import subprocess
 import yaml
 
 from group import BigVGroup
-from exceptions import BigVProblem,BigVCollision
+from exceptions import BigVProblem,BigVCollision,BigVGroupMissing
 
 from machine import BigVMachine
 
