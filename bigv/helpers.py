@@ -4,7 +4,10 @@ class BigVResource:
         self.data = data
 
     def fact(self,fact):
-        return self.data[":"+fact]
+        if fact in self.data:
+            return self.data[fact]
+        else:
+            return None
 
 class BigVMachineResource(BigVResource):
     def machine(self):

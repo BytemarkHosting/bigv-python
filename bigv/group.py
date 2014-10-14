@@ -1,7 +1,12 @@
 from helpers import BigVResource
 from machine import BigVMachine
+from disc import BigVDisc
+from exceptions import BigVCollision
 
 class BigVGroup(BigVResource):
+    def url(self):
+        return self.account.url() + "/groups/" + str(self.group_id())
+
     def group_id(self):
         return self.fact("id")
 
@@ -18,10 +23,44 @@ class BigVGroup(BigVResource):
                 return m
 
     def machines(self):
-        for m in self.fact("virtual_machines"):
+        for m in self.account.cmd("GET", self.url() + "/virtual_machines"):
             yield BigVMachine(self.account, m)
 
-    def __str__(self):
-        return "<BigVGroup name=%s machines=%d>" % (self.name(), len(self.machines()))
+    def create_machine(self,name,
+                       distribution='wheezy',
+                       cores=1,
+                       memory=1,
+                       discs="sata:25GB",
+                       root_password=None):
 
+        if self.machine(name=name) != None:
+            raise BigVCollision("VM Already exists %s" % mgrp)
+
+        discs = BigVDisc.parse(discs)
+
+        data = dict({
+            "virtual_machine": dict({
+                "name": name,
+                "cores": cores,
+                "memory": memory*1024,
+                "power_on": True
+            }),
+            "discs": discs,
+            "reimage": dict({
+                "distribution": distribution,
+            })
+        })
+
+        if root_password != None:
+            data["reimage"]["root_password"] = root_password
+
+        self.account.cmd("POST", self.url()+"/vm_create", data=data)
+
+        # We have to invalidate the vm show cache here or we'll get old data back
+        self.account.invalidate_cache(self.url()+"/virtual_machines")
+
+        return self.machine(name=name)
+
+    def __str__(self):
+        return "<BigVGroup name=%s>" % (self.name())
 

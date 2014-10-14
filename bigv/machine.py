@@ -3,6 +3,16 @@ from nic import BigVNic
 from disc import BigVDisc
 
 class BigVMachine(BigVMachineResource):
+
+    def url(self):
+        return self.account.url() + "/groups/" + str(self.group_id()) + "/virtual_machines/" + str(self.vm_id())
+
+    def vm_id(self):
+        return self.fact("id")
+    
+    def group_id(self):
+        return self.fact("group_id")
+
     def group(self):
         return self.account.group(group_id=self.fact("group_id"))
 
@@ -40,7 +50,7 @@ class BigVMachine(BigVMachineResource):
         return self.fact("name")
 
     def discs(self):
-        for d in self.fact("discs"):
+        for d in self.account.cmd("GET", self.url() + "/discs"):
             yield BigVDisc(self.account, d)
 
     def disc(self,label):
@@ -51,43 +61,62 @@ class BigVMachine(BigVMachineResource):
     def create_disc(self, label, size, grade="sata"):
         if self.disc(label):
             raise BigVCollision("Disk %s already exists!" % label)
-        (rc,so,se) = self.op("disc new", dict(disc_label=label,
-                                              disc_grade=grade,
-                                              disc_size=int(size)))
-        self.account.invalidate_cache()
+
+        self.account.cmd("POST", self.url() + "/discs", 
+            data= dict({"label": label, "storage_grade": grade, "size":int(size)}))
+
+        self.account.invalidate_cache(self.url())
+
         return self.disc(label)
 
     def nics(self):
-        for n in self.fact("network_interfaces"):
+        for n in self.account.cmd("GET", self.url() + "/nics"):
             yield BigVNic(self.account, n)
 
     def nic(self, index):
         return self.nics[index]
 
     def __str__(self):
-        return "<BigVMachine name=%s discs=%d nics=%s>" % (self.name(), len(list(self.discs())), len(list(self.nics())))
+        return "<BigVMachine name=%s>" % (self.name())
 
     def ips(self):
         ips = []
         return [item for sublist in [list(nic.ips()) for nic in self.nics()] for item in sublist]
-
-    def restart(self):
-        return self.op("vm restart")
     
+    def signal(self, signal, keys=None):
+        data = dict({"signal": signal})
+
+        if signal == "sendkey":
+            data["data"] = keys
+            
+        return self.account.cmd("POST", self.url()+"/signal", data=data)
+
+    def reset(self):
+        return self.signal("reset")
+
     def shutdown(self):
-        return self.op("vm shutdown")
+        return self.signal("powerdown")
+    
+    def cad(self):
+        return self.signal("sendkey",keys="ctrl-alt-del")
 
     def start(self):
-        return self.op("vm start")
+        return self.account.cmd("PUT", self.url(), data=dict({"power_on": True}))
 
     def stop(self):
-        return self.op("vm stop")
+        return self.account.cmd("PUT", self.url(), data=dict({"power_on": False, "autoreboot_on": False}))
+    
+    def restart(self):
+        if self.power_on():
+           self.account.cmd("PUT", self.url(), data=dict({"power_on": False}))
+
+        return self.start()
 
     def undelete(self):
-        return self.op("vm undelete")
+        return self.account.cmd("PUT", self.url(), data=dict({"deleted": False}))
 
     def delete(self):
-        return self.op("vm delete")
+        return self.account.cmd("DELETE", self.url())
 
     def info(self):
         return dict(name=self.name(),

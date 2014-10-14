@@ -3,12 +3,13 @@
 This is an initial attempt at a Python module for BigV, with the eventual idea
 that this will be incorporated into an Ansible module.
 
-*Note* This is a wrapper around the BigV [command-line tool][1], rather than a
-tool which consumes the REST API. The REST API is documented [here][2] (and its
-docs are on Github [here][3]).
+This tool consumes the BigV REST API. The REST API is documented [here][2] (and
+its docs are on Github [here][3]), and depends on the python-requests module[4].
 
 ## TODO
 
+* RDNS
+* Purging VMs
 * Testing
 * Packaging
 * Everything else
@@ -37,6 +38,7 @@ the two modules.
 [1]: http://www.bigv.io/download
 [2]: http://www.bigv.io/support/api/
 [3]: https://github.com/ichilton/bytemark-bigv-api-doc
+[4]: http://docs.python-requests.org/en/latest/
 
 ## Manual Installation Instructions
 

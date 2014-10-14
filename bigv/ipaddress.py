@@ -6,16 +6,14 @@ class BigVIPAddress:
         self.ip = ip
         self._rdns = None
 
+    def url(self):
+        return "/ips/" + str(self.group_ip)
+
     def rdns(self, newval=None):
-        if self._rdns != None:
-            return self._rdns
         if newval:
-            self.account.cmd(["ip rdns",
-                        "--address %s" % self.ip,
-                        "--rdns %s" % newval])
+            x = self.account.cmd("PUT", self.url, data=dict({"rdns": newval}))
         else:
-            (rc,so,se) = self.account.cmd(["ip show",
-                                        "--address %s" % self.ip])
-            self._rdns = yaml.load(so)[":rdns"] 
-            return self._rdns
+            x = self.account.cmd("GET", self.url())
+
+        return x["rdns"]
 

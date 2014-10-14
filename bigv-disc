@@ -1,10 +1,8 @@
 #!/usr/bin/python
-#coding: utf-8 -*-
+#encoding: utf-8 -*-
 
-import os,sys
-import subprocess
-import yaml
 import json
+import sys
 
 sys.path.append(".")
 import bigv
@@ -27,42 +25,35 @@ options:
         - Password for user to login with
      required: true
      default: 'yes'
-   login_account:
-     description:
-        - BigV account to select
-     required: true
    login_yubikey:
      description:
         - Yubikey OTP
      required: false
-   login_location:
-     description:
-        - API endpoint of the BigV cluster
-     required: false
-     default: https://uk0.bigv.io
    vm_name:
      description:
-        - Name of the VM to operate on
+        - Full name of the VM to operate on, e.g. host.group.account.uk0.bigv.io
     required: true
-   vm_group:
-     description:
-        - Group of the VM to operate on
-     required: true
-     default: 'default'
    disc_label:
      description:
         - Label for the disc
      required: true
    disc_grade:
      description:
-        - Grade for the disc, must be one of 'sata', 'sas', 'ssd' or 'archive'
+        - Grade for the disc, must be one of 'sata', 'ssd' or 'archive'
      required: false
      default: 'sata'
    disc_size:
      description:
-        - Size for the disc, in GB, as a string eg '25'
-    required: false
-requirements: ["bigv"]
+        - Size for the disc, in GiB, as a number eg 25
+     required: false
+     default: 25
+   purge:
+     description:
+        - Whether or not to purge the disc when deleting.
+     default: false
+     required: false
+
+requirements: ["bigv","requests"]
 '''
 
 EXAMPLES = '''
@@ -70,12 +61,10 @@ EXAMPLES = '''
 - bigv-disc: state: present
         login_username: alice
         login_password: test123
-        login_account: mycompany
-        vm_name: status
-        vm_group: testing
+        vm_name: status.testing.mycompany.uk0.bigv.io
         disc_name: backups
         disc_grade: archive
-        disc_size: 500GB
+        disc_size: 500
 '''
 
 def main():
@@ -84,57 +73,84 @@ def main():
             login_username                  = dict(required=True),
             login_password                  = dict(required=True),
             login_yubikey                   = dict(default=None),
-            login_location                  = dict(default='https://uk0.bigv.io'),
-            login_account                   = dict(required='True'),
             vm_name                         = dict(required=True),
-            vm_group                        = dict(default='default'),
             disc_label                      = dict(required=True),
-            disc_size                       = dict(required=False,default='25'),
-            disc_grade                      = dict(default='sata', choices=['sata','sas','ssd','archive']),
+            disc_size                       = dict(required=False, default=25),
+            disc_grade                      = dict(default='sata', choices=['sata','ssd','archive']),
             state                           = dict(default='present', choices=['absent', 'present']),
-            purge                           = dict(default=False,choices=BOOLEANS)
+            purge                           = dict(default=False, choices=BOOLEANS)
         ),
     )
 
-    account = bigv.BigVAccount(username=module.params['login_username'],
-                          password=module.params['login_password'],
-                          account=module.params['login_account'],
-                          yubikey=module.params['login_yubikey'],
-                          location=module.params['login_location'])
+    try:
+        vm_name, vm_group, vm_account, vm_location =  module.params['vm_name'].split(".", 3)
+    except ValueError:
+        module.fail_json(msg="vm_name must be a full BigV host name, e.g. hostname.group.account.uk0.bigv.io")
 
-    ngrp = bigv.BigVMachine.mgrp(module.params['vm_name'],module.params['vm_group'])
+    vm_location = "https://"+vm_location
 
-    target = account.machine(namegroup=ngrp)
+    try:
+        account = bigv.BigVAccount(username=module.params['login_username'],
+                              password=module.params['login_password'],
+                              yubikey=module.params['login_yubikey'],
+                              account=vm_account,
+                              location=vm_location)
+   
+        group = account.group(vm_group)
+        if group == None:
+            module.fail_json(msg="Group " + vm_group + " doesn't exist and group_create is false")
 
-    if target == None:
-        # machine doesn't exist
-        module.fail_json(msg="No such vm %s" % ngrp)
-    else:
-        # machine does exist
-        disc = target.disc(module.params['disc_label'])
-        if disc == None:
-            if module.params['state'] == 'absent':
-                module.exit_json(changed=False)
-            else:
-                # disc=None but state=Present
-                newdisc = target.create_disc(label=module.params['disc_label'],
-                                             grade=module.params['disc_grade'],
-                                             size=module.params['disc_size'])
-                module.exit_json(changed=True,disc=newdisc.info())
+        #
+        # Workout the size of the disc
+        #
+        sz = module.params["disc_size"]
+
+        if not isinstance(sz, int) or not isinstance(sz, float):
+            try:
+                sz = int(module.params["disc_size"])
+            except ValueError:
+                sz = float(module.params["disc_size"])
+
+        #
+        # Now make it an integer and turn it into MiB.
+        #
+        sz = int(sz * 1024)
+
+        target = group.machine(vm_name)
+    
+        if target == None:
+            # machine doesn't exist
+            module.fail_json(msg="No such vm %s" % ngrp)
         else:
-            # disc exists
-            if module.params['state'] == 'absent':
-                if module.boolean(module.params['purge']):
-                    target.disc(module.params['disc_label']).purge()
+            # machine does exist
+            disc = target.disc(module.params['disc_label'])
+            if disc == None:
+                if module.params['state'] == 'absent':
+                    module.exit_json(changed=False)
                 else:
-                    target.disc(module.params['disc_label']).delete()
-                module.exit_json(changed=True,msg="Deleted disc %s from %s" % (module.params['disc_label'],
-                                                                               ngrp))
+                    # disc=None but state=Present
+                    newdisc = target.create_disc(label=module.params['disc_label'],
+                                                 grade=module.params['disc_grade'],
+                                                 size=sz)
+                    module.exit_json(changed=True,disc=newdisc.info())
             else:
-                # is it the same size/grade?
+                # disc exists
+                if module.params['state'] == 'absent':
+                    if module.boolean(module.params['purge']):
+                        target.disc(module.params['disc_label']).purge()
+                    else:
+                        target.disc(module.params['disc_label']).delete()
+                    module.exit_json(changed=True,msg="Deleted disc %s from %s" % (module.params['disc_label'],
+                                                                                   ngrp))
+                else:
+                    # is it the same size/grade?
+    
+                    module.exit_json(changed=False, disc=disc.info())
 
-                module.exit_json(changed=False, disc=disc.info())
-    module.fail_json(msg="Shouldn't reach here")
+        module.fail_json(msg="Shouldn't reach here")
 
+    except bigv.BigVProblem as e:
+         module.fail_json(msg=e.msg, http_status=e.http_status, http_method=e.http_method, url=e.url)
+    
 from ansible.module_utils.basic import *
 main()
