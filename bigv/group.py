@@ -36,13 +36,24 @@ class BigVGroup(BigVResource):
         if self.machine(name=name) != None:
             raise BigVCollision("VM Already exists %s" % mgrp)
 
+        if not isinstance(cores, int):
+            cores = int(cores)
+
+        if not isinstance(memory, int) or not isinstance(memory, float):
+            try:
+                memory = int(memory)
+            except ValueError:
+                memory = float(memory)
+
+        memory = int(memory * 1024)
+
         discs = BigVDisc.parse(discs)
 
         data = dict({
             "virtual_machine": dict({
                 "name": name,
                 "cores": cores,
-                "memory": memory*1024,
+                "memory": memory,
                 "power_on": True
             }),
             "discs": discs,

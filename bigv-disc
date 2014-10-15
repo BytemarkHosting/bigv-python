@@ -100,22 +100,6 @@ def main():
         if group == None:
             module.fail_json(msg="Group " + vm_group + " doesn't exist and group_create is false")
 
-        #
-        # Workout the size of the disc
-        #
-        sz = module.params["disc_size"]
-
-        if not isinstance(sz, int) or not isinstance(sz, float):
-            try:
-                sz = int(module.params["disc_size"])
-            except ValueError:
-                sz = float(module.params["disc_size"])
-
-        #
-        # Now make it an integer and turn it into MiB.
-        #
-        sz = int(sz * 1024)
-
         target = group.machine(vm_name)
     
         if target == None:
@@ -131,7 +115,7 @@ def main():
                     # disc=None but state=Present
                     newdisc = target.create_disc(label=module.params['disc_label'],
                                                  grade=module.params['disc_grade'],
-                                                 size=sz)
+                                                 size=module.params['disc_size'])
                     module.exit_json(changed=True,disc=newdisc.info())
             else:
                 # disc exists

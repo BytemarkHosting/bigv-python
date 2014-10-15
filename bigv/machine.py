@@ -59,11 +59,25 @@ class BigVMachine(BigVMachineResource):
                 return d
 
     def create_disc(self, label, size, grade="sata"):
+        #
+        # Tidy up our size argument
+        #
+        if not isinstance(size, int) or not isinstance(size, float):
+            try:
+                size = int(size)
+            except ValueError:
+                size = float(size)
+
+        #
+        # Now make it an integer and turn it into MiB.
+        #
+        size = int(size * 1024)
+
         if self.disc(label):
             raise BigVCollision("Disk %s already exists!" % label)
 
         self.account.cmd("POST", self.url() + "/discs", 
-            data= dict({"label": label, "storage_grade": grade, "size":int(size)}))
+            data= dict({"label": label, "storage_grade": grade, "size": size}))
 
         self.account.invalidate_cache(self.url())
 
