@@ -31,7 +31,8 @@ class BigVGroup(BigVResource):
                        cores=1,
                        memory=1,
                        discs="sata:25GB",
-                       root_password=None):
+                       root_password=None,
+                       ssh_public_key=None):
 
         if self.machine(name=name) != None:
             raise BigVCollision("VM Already exists %s" % mgrp)
@@ -64,6 +65,9 @@ class BigVGroup(BigVResource):
 
         if root_password != None:
             data["reimage"]["root_password"] = root_password
+        
+        if ssh_public_key != None:
+            data["reimage"]["ssh_public_key"] = ssh_public_key
 
         self.account.cmd("POST", self.url()+"/vm_create", data=data)
 
