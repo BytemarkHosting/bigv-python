@@ -48,6 +48,11 @@ Since this is very much still in development, installation is a fairly manual pr
 2. Create a symlink to the `bigv/` directory somewhere in the Python Path, you can check it works by running `python -c 'import bigv'` and making sure it returns 0
 3. Create a `library/` directory in the same directory as your Ansible playbook, symlink `bigv-disc` and `bigv-vm` into it.
 
+
+## TODO
+
+Move to the new session-token based authentication.
+
 <!--- vim:textwidth=80 
 --->
 
