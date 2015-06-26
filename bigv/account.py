@@ -19,10 +19,22 @@ class BigVAccount:
         self.yubikey = yubikey
         self.account = account
         self._cmd_cache = dict()
+        self._session_token = None
         self.data = None
 
     def url(self):
         return "/accounts/"+self.account
+        
+    def session_token(self):
+        if self._session_token != None:
+            return self._session_token
+        else:
+            st = requests.post("https://auth.bytemark.co.uk/session", data=dict(username=self.username,password=self.password))
+            if st.status_code >= 400:
+                raise BigVProblem(msg="Bad Auth: %s" % st.text)
+            else:
+                self._session_token = st.text
+                return self._session_token
 
     def cmd(self, method, url, params=None, data=None):
         if method == "GET" and url in self._cmd_cache:
@@ -33,7 +45,8 @@ class BigVAccount:
         else:
             headers = dict()
 
-        auth = HTTPBasicAuth(self.username, self.password)
+        # auth = HTTPBasicAuth(self.username, self.password)
+        headers['Authorization'] = 'Bearer %s' % self.session_token()
 
         if data and not isinstance(data, str):
             data = json.dumps(data)
