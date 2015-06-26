@@ -132,8 +132,11 @@ class BigVMachine(BigVMachineResource):
     def undelete(self):
         return self.account.cmd("PUT", self.url(), data=dict({"deleted": False}))
 
-    def delete(self):
-        return self.account.cmd("DELETE", self.url())
+    def delete(self, purge=False):
+        return self.account.cmd("DELETE", self.url(), params=dict({"purge": purge}))
+
+    def purge(self):
+        return self.delete(True)
 
     def info(self):
         return dict(name=self.name(),

@@ -26,12 +26,11 @@ class BigVGroup(BigVResource):
         for m in self.account.cmd("GET", self.url() + "/virtual_machines", params=dict({"include_deleted": include_deleted})):
             yield BigVMachine(self.account, m)
 
-    def create_machine(self,name,
+    def create_machine(self,name,root_password,
                        distribution='wheezy',
                        cores=1,
                        memory=1,
                        discs="sata:25GB",
-                       root_password=None,
                        ssh_public_key=None,
                        zone_name=None):
 
@@ -55,8 +54,7 @@ class BigVGroup(BigVResource):
             "virtual_machine": dict({
                 "name": name,
                 "cores": cores,
-                "memory": memory,
-                "power_on": True,
+                "memory": memory
             }),
             "discs": discs,
             "reimage": dict({
