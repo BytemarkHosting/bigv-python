@@ -6,14 +6,6 @@ that this will be incorporated into an Ansible module.
 This tool consumes the BigV REST API. The REST API is documented [here][2] (and
 its docs are on Github [here][3]), and depends on the python-requests module[4].
 
-## TODO
-
-* RDNS
-* Purging VMs
-* Testing
-* Packaging
-* Everything else
-
 ## Examples
 
     import bigv
@@ -52,9 +44,13 @@ Since this is very much still in development, installation is a fairly manual pr
 ## TODO
 
 - [ ] Move to the new session-token based authentication.
-- [ ] Move to the faster /virtual_machines endpoint instead of enumerating groups
+- [ ] Move to the faster `/virtual_machines endpoint` instead of enumerating groups
 - [x] Add zone support
 - [ ] Add definitions support to get available operating systems, zones etc
+- [ ] RDNS
+- [x] Purging VMs
+- [ ] Testing
+- [ ] Packaging
 
 <!--- vim:textwidth=80 
 --->
