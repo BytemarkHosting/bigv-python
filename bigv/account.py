@@ -87,13 +87,12 @@ class BigVAccount:
     def invalidate_cache(self, url=None):
         if url and url in self._cmd_cache:
             del self._cmd_cache[url]
-
         else:
             self._cmd_cache = dict()
 
-    def machines(self, group=None):
+    def machines(self, group=None, include_deleted=True):
         for g in self.groups():
-            for m in g.machines():
+            for m in g.machines(include_deleted):
                 yield m
 
     def machine(self, namegroup=None, machine_id=None):

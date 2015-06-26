@@ -22,8 +22,8 @@ class BigVGroup(BigVResource):
             if machine_id != None and m.machine_id() == machine_id:
                 return m
 
-    def machines(self):
-        for m in self.account.cmd("GET", self.url() + "/virtual_machines"):
+    def machines(self, include_deleted=True):
+        for m in self.account.cmd("GET", self.url() + "/virtual_machines", params=dict({"include_deleted": include_deleted})):
             yield BigVMachine(self.account, m)
 
     def create_machine(self,name,

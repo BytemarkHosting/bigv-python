@@ -142,6 +142,7 @@ class BigVMachine(BigVMachineResource):
                     memory=self.memory(),
                     state=self.state(),
                     zone_name=self.zone_name(),
+                    deleted=self.deleted(),
                     hardware_profile=self.hardware_profile(),
                     discs=[d.info() for d in self.discs()],
                     nics=[n.info() for n in self.nics()])
