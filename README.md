@@ -1,4 +1,5 @@
 # Python module for BigV
+<img align='right' style='float: left' src='https://www.bigv.io/images/bigv_logo.png'/>
 
 This is an initial attempt at a Python module for BigV, with the eventual idea
 that this will be incorporated into an Ansible module.
