@@ -48,6 +48,9 @@ class BigVMachine(BigVMachineResource):
 
     def name(self):
         return self.fact("name")
+        
+    def zone_name(self):
+        return self.fact("zone_name")
 
     def discs(self):
         for d in self.account.cmd("GET", self.url() + "/discs"):
@@ -138,6 +141,8 @@ class BigVMachine(BigVMachineResource):
                     cores=self.cores(),
                     memory=self.memory(),
                     state=self.state(),
+                    zone_name=self.zone_name(),
+                    hardware_profile=self.hardware_profile(),
                     discs=[d.info() for d in self.discs()],
                     nics=[n.info() for n in self.nics()])
 
