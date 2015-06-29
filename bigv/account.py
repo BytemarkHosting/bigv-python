@@ -54,7 +54,7 @@ class BigVAccount:
         if self.yubikey:
             headers["X-Yubikey-Otp"] = self.yubikey
 
-        r = requests.request(method, self.location+url, params=params, auth=auth, headers=headers, data=data)
+        r = requests.request(method, self.location+url, params=params, headers=headers, data=data)
 
         # FIXME: Deal with other status codes properly..
         if r.status_code >= 400:
