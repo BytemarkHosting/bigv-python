@@ -29,7 +29,10 @@ class BigVAccount:
         if self._session_token != None:
             return self._session_token
         else:
-            st = requests.post("https://auth.bytemark.co.uk/session", data=dict(username=self.username,password=self.password))
+            creds = dict(username=self.username,password=self.password)
+            if self.yubikey:
+                creds[yubikey] = self.yubikey
+            st = requests.post("https://auth.bytemark.co.uk/session", data=creds)
             if st.status_code >= 400:
                 raise BigVProblem(msg="Bad Auth: %s" % st.text)
             else:
