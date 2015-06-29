@@ -20,3 +20,5 @@ class BigVGroupMissing(BigVProblem): pass
 
 class BigVCollision(BigVProblem): pass
 
+class BigVAuthProblem(BigVProblem): pass
+
