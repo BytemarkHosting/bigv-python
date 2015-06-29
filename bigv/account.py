@@ -54,9 +54,6 @@ class BigVAccount:
         if data and not isinstance(data, str):
             data = json.dumps(data)
 
-        if self.yubikey:
-            headers["X-Yubikey-Otp"] = self.yubikey
-
         r = requests.request(method, self.location+url, params=params, headers=headers, data=data)
 
         # FIXME: Deal with other status codes properly..
