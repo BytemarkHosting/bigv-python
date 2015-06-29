@@ -31,7 +31,7 @@ class BigVAccount:
         else:
             creds = dict(username=self.username,password=self.password)
             if self.yubikey:
-                creds[yubikey] = self.yubikey
+                creds["yubikey"] = self.yubikey
             st = requests.post("https://auth.bytemark.co.uk/session", data=creds)
             if st.status_code >= 400:
                 raise BigVProblem(msg="Bad Auth: %s" % st.text)
