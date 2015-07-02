@@ -5,7 +5,7 @@ This is an initial attempt at a Python module for BigV, with the eventual idea
 that this will be incorporated into an Ansible module.
 
 This tool consumes the BigV REST API. The REST API is documented [here][2] (and
-its docs are on Github [here][3]), and depends on the python-requests module[4].
+its docs are on Github [here][3]), and depends on the python-requests [module][4].
 
 ## Examples
 
