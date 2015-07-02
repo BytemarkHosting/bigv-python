@@ -155,8 +155,11 @@ def main():
         else:
             # machine does exist
             if module.params['state'] == "absent":
-                target.delete()
-                module.exit_json(changed=True, msg="%s was deleted" % target.hostname())
+                target.delete(purge=module.params['purge'])
+                if module.params['purge']:
+                    module.exit_json(changed=True, msg="%s was PURGED FOREVER" % target.hostname())
+                else:
+                    module.exit_json(changed=True, msg="%s was deleted" % target.hostname())
             else:
                 if target.state() == "on" and module.params['state'] == "stopped":
                     target.stop()
