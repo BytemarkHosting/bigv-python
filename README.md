@@ -47,7 +47,7 @@ Since this is very much still in development, installation is a fairly manual pr
 - [x] Move to the new session-token based authentication.
 - [ ] Move to the faster `/virtual_machines endpoint` instead of enumerating groups
 - [x] Add zone support
-- [ ] Add definitions support to get available operating systems, zones etc
+- [x] Add definitions support to get available operating systems, zones etc
 - [ ] RDNS
 - [x] Purging VMs
 - [ ] Testing
