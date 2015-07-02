@@ -61,6 +61,10 @@ options:
      required: true
      description:
        - Root password for the created VM
+   vm_zone:
+     required: false
+     description:
+        - Zone to deploy the VM in
    purge:
      description:
         - Whether or not to purge the disc when deleting.
@@ -92,6 +96,7 @@ def main():
             vm_discs                        = dict(default='sata:25'),
             vm_root_password                = dict(required=True),
             vm_rdns                         = dict(default=None),
+            vm_zone                         = dict(default=None),
             wait                            = dict(default='yes', choices=['yes', 'no']),
             group_create                    = dict(default='no', choices=['yes', 'no']),
             purge                           = dict(default=False, choices=BOOLEANS),
@@ -133,6 +138,7 @@ def main():
                                                  cores=module.params['vm_cores'],
                                                  memory=module.params['vm_memory'],
                                                  discs=module.params['vm_discs'],
+                                                 zone_name=module.params['vm_zone_name'],
                                                  root_password=module.params['vm_root_password'])
                 #
                 # Poll to see if the machine has been switched on (wait for 5 minutes)
