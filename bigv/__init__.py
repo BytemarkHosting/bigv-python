@@ -6,3 +6,4 @@ from ipaddress import BigVIPAddress
 from machine import BigVMachine
 from disc import BigVDisc
 from nic import BigVNic
+from definitions import BigVDefinitions
