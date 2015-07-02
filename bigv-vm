@@ -57,6 +57,10 @@ options:
    vm_rdns:
      description:
         - RDNS record for the Virtual Machine's primary IPv6 and IPv4 addresses
+   vm_root_password:
+     required: true
+     description:
+       - Root password for the created VM
    purge:
      description:
         - Whether or not to purge the disc when deleting.
@@ -86,7 +90,7 @@ def main():
             vm_cores                        = dict(default=1),
             vm_memory                       = dict(default=1),
             vm_discs                        = dict(default='sata:25'),
-            vm_root_password                = dict(default=None),
+            vm_root_password                = dict(required=True),
             vm_rdns                         = dict(default=None),
             wait                            = dict(default='yes', choices=['yes', 'no']),
             group_create                    = dict(default='no', choices=['yes', 'no']),
