@@ -5,6 +5,11 @@ class BigVProblem(Exception):
         self.http_method = http_method
         self.url = url
 
+    @classmethod
+    def check_response(cls,resp):
+        if resp.status_code >= 400:
+            raise BigVProblem(resp.reason,resp.status_code,resp.request.method,resp.url)
+
     def http_error(self):
         if self.http_status != None:
             s = str(self.msg) + " (HTTP "+str(self.http_method)+" "+str(self.url)+" returned "+str(self.http_status)+")"

@@ -33,11 +33,9 @@ class BigVAccount:
             if self.yubikey:
                 creds["yubikey"] = self.yubikey
             st = requests.post("https://auth.bytemark.co.uk/session", data=creds)
-            if st.status_code >= 400:
-                raise BigVProblem(msg="Bad Auth: %s" % st.text)
-            else:
-                self._session_token = st.text
-                return self._session_token
+            BigVProblem.check_response(st)
+            self._session_token = st.text
+            return self._session_token
 
     def cmd(self, method, url, params=None, data=None):
         if method == "GET" and url in self._cmd_cache:
@@ -55,11 +53,7 @@ class BigVAccount:
             data = json.dumps(data)
 
         r = requests.request(method, self.location+url, params=params, headers=headers, data=data)
-
-        # FIXME: Deal with other status codes properly..
-        if r.status_code >= 400:
-           raise BigVProblem(msg=r.text, http_status=r.status_code, http_method=method, url=self.location+url)
-
+        BigVProblem.check_response(r)
         if 'content-type' in r.headers and re.search('^application/(vnd\.bigv\..*\+)?json$', r.headers['content-type']):
            result = json.loads(r.text)
         else:
