@@ -1,1 +1,3 @@
 bigv/*.pyc
+bigv/__pycache__/
+*.bak

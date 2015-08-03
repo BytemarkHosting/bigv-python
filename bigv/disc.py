@@ -1,6 +1,6 @@
 import re
 import json
-from helpers import BigVMachineResource
+from .helpers import BigVMachineResource
 
 class BigVDisc(BigVMachineResource):
     def machine(self):

@@ -7,9 +7,9 @@ import re
 
 from requests.auth import HTTPBasicAuth
 
-from group import BigVGroup
-from exceptions import BigVProblem,BigVCollision,BigVGroupMissing
-from machine import BigVMachine
+from .group import BigVGroup
+from .exceptions import BigVProblem,BigVCollision,BigVGroupMissing
+from .machine import BigVMachine
 
 class BigVAccount:
     def __init__(self,username,password,account,yubikey=None,location="https://uk0.bigv.io"):

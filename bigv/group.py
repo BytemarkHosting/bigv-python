@@ -1,7 +1,7 @@
-from helpers import BigVResource
-from machine import BigVMachine
-from disc import BigVDisc
-from exceptions import BigVCollision
+from .helpers import BigVResource
+from .machine import BigVMachine
+from .disc import BigVDisc
+from .exceptions import BigVCollision
 
 class BigVGroup(BigVResource):
     def url(self):

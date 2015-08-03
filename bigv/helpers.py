@@ -15,7 +15,7 @@ class BigVMachineResource(BigVResource):
 
     def op(self, operation, dargs={}):
         args = []
-        for k in dargs.keys():
+        for k in list(dargs.keys()):
             key = k.replace("_","-")
             v = dargs[k]
             if v == None:

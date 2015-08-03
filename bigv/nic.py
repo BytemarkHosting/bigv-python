@@ -1,5 +1,5 @@
-from helpers import BigVResource
-from ipaddress import BigVIPAddress
+from .helpers import BigVResource
+from .ipaddress import BigVIPAddress
 
 class BigVNic(BigVResource):
     def ips(self):

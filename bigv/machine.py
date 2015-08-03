@@ -1,6 +1,6 @@
-from helpers import BigVMachineResource
-from nic import BigVNic
-from disc import BigVDisc
+from .helpers import BigVMachineResource
+from .nic import BigVNic
+from .disc import BigVDisc
 
 class BigVMachine(BigVMachineResource):
 

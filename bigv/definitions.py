@@ -3,7 +3,7 @@ import json
 import re
 import itertools
 
-from exceptions import BigVProblem
+from .exceptions import BigVProblem
 
 # Usage:
 # >>> bigv.BigVDefinitions(location='https://uk0.bigv.io').fact('distributions')
@@ -24,6 +24,6 @@ class BigVDefinitions:
                return self._def_cache
     
     def fact(self,key):
-        lists = filter(lambda i: i != None, map(lambda i: i['id'] == key and i['data'] or None, self.definitions_raw()))
+        lists = [i for i in [i['id'] == key and i['data'] or None for i in self.definitions_raw()] if i != None]
         #http://stackoverflow.com/questions/952914/making-a-flat-list-out-of-list-of-lists-in-python
         return [item for sublist in list(itertools.chain(lists)) for item in sublist]
