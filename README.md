@@ -38,8 +38,9 @@ the two modules.
 Since this is very much still in development, installation is a fairly manual process which allows you to pull changes from the git repo directly:
 
 1. Checkout the repo somewhere
-2. Create a symlink to the `bigv/` directory somewhere in the Python Path, you can check it works by running `python -c 'import bigv'` and making sure it returns 0
-3. Create a `library/` directory in the same directory as your Ansible playbook, symlink `bigv-disc` and `bigv-vm` into it.
+2. Install the Python module dependencies ('$ pip install -r requirements.txt')
+3. Create a symlink to the `bigv/` directory somewhere in the Python Path, you can check it works by running `python -c 'import bigv'` and making sure it returns 0
+4. Create a `library/` directory in the same directory as your Ansible playbook, symlink `bigv-disc` and `bigv-vm` into it.
 
 <!--- vim:textwidth=80 
 --->
