@@ -63,6 +63,7 @@ options:
        - Root password for the created VM
    vm_zone:
      required: false
+     default: None
      description:
         - Zone to deploy the VM in
    purge:
