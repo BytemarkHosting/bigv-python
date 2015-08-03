@@ -1,6 +1,5 @@
 import time
 import subprocess
-import yaml
 import requests
 import json
 import re

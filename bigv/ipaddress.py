@@ -1,5 +1,3 @@
-import yaml
-
 class BigVIPAddress:
     def __init__(self, account, ip):
         self.account = account
