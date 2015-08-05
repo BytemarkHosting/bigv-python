@@ -139,7 +139,7 @@ def main():
                                                  cores=module.params['vm_cores'],
                                                  memory=module.params['vm_memory'],
                                                  discs=module.params['vm_discs'],
-                                                 zone_name=module.params['vm_zone_name'],
+                                                 zone_name=module.params['vm_zone'],
                                                  root_password=module.params['vm_root_password'])
                 #
                 # Poll to see if the machine has been switched on (wait for 5 minutes)
