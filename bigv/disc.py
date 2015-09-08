@@ -12,6 +12,9 @@ class BigVDisc(BigVMachineResource):
     def storage_grade(self):
         return self.fact("storage_grade")
 
+    def storage_pool(self):
+        return self.fact("storage_pool")
+
     def size(self):
         return self.fact("size")
 
@@ -22,12 +25,13 @@ class BigVDisc(BigVMachineResource):
         return self.account.cmd("DELETE", self.url(), params=dict({"purge": True}))
 
     def __str__(self):
-        return "<BigVDisc label=%s size=%sGB storage_grade=%s>" % (self.label(),self.size()/1024, self.storage_grade())
+        return "<BigVDisc label=%s size=%sGB storage_grade=%s pool=%s>" % (self.label(),self.size()/1024, self.storage_grade(), self.storage_pool())
 
     def info(self):
         return dict(label=self.label(),
                     grade=self.storage_grade(),
-                    size=self.size())
+                    size=self.size(),
+                    pool=self.storage_pool())
 
     @classmethod
 

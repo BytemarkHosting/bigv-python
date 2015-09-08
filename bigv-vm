@@ -66,6 +66,11 @@ options:
      default: None
      description:
         - Zone to deploy the VM in
+   vm_firstboot_script:
+     required: false
+     default: None
+     description:
+         - Script for VM to run on first boot if being imaged
    purge:
      description:
         - Whether or not to purge the disc when deleting.
@@ -98,6 +103,7 @@ def main():
             vm_root_password                = dict(required=True),
             vm_rdns                         = dict(default=None),
             vm_zone                         = dict(default=None),
+            vm_firstboot_script             = dict(default=None),
             wait                            = dict(default='yes', choices=['yes', 'no']),
             group_create                    = dict(default='no', choices=['yes', 'no']),
             purge                           = dict(default=False, choices=BOOLEANS),
@@ -140,7 +146,8 @@ def main():
                                                  memory=module.params['vm_memory'],
                                                  discs=module.params['vm_discs'],
                                                  zone_name=module.params['vm_zone_name'],
-                                                 root_password=module.params['vm_root_password'])
+                                                 root_password=module.params['vm_root_password'],
+                                                 firstboot_script=module.params['vm_firstboot_script'])
                 #
                 # Poll to see if the machine has been switched on (wait for 5 minutes)
                 #
