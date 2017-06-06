@@ -38,7 +38,7 @@ class BigVDisc(BigVMachineResource):
         discs = []
         label = "a"
         for d in re.split(",",str(s)):
-            disc = dict({"label": "vd"+label, "storage_grade": "sata", "size": 0})
+            disc = dict({"label": "disc-"+label, "storage_grade": "sata", "size": 0})
 
             m = re.match(r"^([a-z][^:]*)?:?([0-9.]+)(M|G|T)?B?$", d, re.I)
 
